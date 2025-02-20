@@ -23,17 +23,28 @@ En base a la situacion descrita anterioremente responda:
 #### Pregunta 1.1
 ***¿Qué antecedentes debiese obtener para analizar el problema?***
 
+*para los atedecedentes tomaria en cuanta lo siguiente: Validar los logs de la API para el envío con referencia TI255826267, verificar con el Customer Team si el enviado contenía la especificación de que servicio se requeria (normal o express), revisar las configuraciones en el sistema para determinar si se aplico la asignación correctamente, revisar si hubo modificaciones recientes en la configuraciones de dicho servicio, ver con el equipo de desarrollo o en mi area ,si han tenido alguna problematica similar y el como lo solucionaron.
 
 Asumiendo que usted puede comunicarse con el área TI del e-commerce (Customer Team), con el equipo de desarrollo TI de Envíame (Dev Team) y que además tiene acceso a un sistema de log de transacciones de los envíos creados a través de la API, que es gestionado por el equipo de administración de sistemas de Envíame (SysAdm Team).
 
 #### Pregunta 1.2
 ***¿Cuál sería su primer paso en la recopilación de antecedentes técnicos?***
 
+*Realizar una solicitud al SysAdm Team para obtener los logs del request correspondiente al envío TI255826267.
 
 Asumiendo que usted, al igual que el cliente, dispone de todas las herramientas para utilizar la API de envíame, y que de usted depende determinar si para la resolución del incidente se requiere dar una indicación al cliente o bien determinar que el caso se debe derivar al área de desarrollo de TI de envíame.
 
 #### Pregunta 1.3
 ***Antes de decidir si se responde o deriva la incidencia ¿Cuál sería su curso de acción para el diagnóstico técnico?***
+
+*El curos de mis acciones seria el siguientes:
+Solicitar capturas al cliente, revisar las capturas proporcionadas, verificar que el cliente ingresara correctamente la informacion y que esta este correctamente contecada a la API y de nuestro lado este resiviendo correctamente la configuracion ingresada(pruebas con cliente), solicitar logs al Customer Team y analizarlos , si los logs muestran errores, solicitar apoyo al Dev Team.Ademas de:
+
+1.-Documentar todo el proceso de seguimiento de pruebas y analisis.
+3.-Incluir informacion proporcionada por los teams SysAdm Team,Customer Team y Dev Team
+2.-Reproducir el error y capturar el error.
+3.-Incluir logs.
+4.-Enviar reporte detallado y curso de accion de la incidencia a support-tech-test@enviame.io
 
 #### Manos a la obra:
 
@@ -73,6 +84,14 @@ Escribe a *support-tech-test@enviame.io* para solicitar mas antecedentes, resolv
 > Si resuelves la incidencia pon en el asunto: [P2] Customer Issue [solved], e indica tu respuesta al cliente.
 > Si requieres derivar la incidencia al equipo de desarrollo de Envíame pon en el asunto: [P2] Dev Issue [Action Required], e indica los antecedentes para que el área de desarrollo pueda resolver.
 
+Tomaria en cuenta realizar los siguientes pasos:
+
+1.-Revisar las capturas proporcionadas y comparar con el manual de integración.(identificar los pasos que le falto al cliente)
+2.-Dar asesoria para poder realizar de nuevo el proceso correctamente
+3.-Validar si la tienda está correctamente conectada a Enviáme.
+4.-Si la configuración está correcta, solicitar al Customer Team logs de la API Shopify para verificar la sincronización.
+5.-Si los logs muestran errores, derivar al Dev Team para asesoria de correccion.
+6.-Si aun asi no queda documentar y realizar incidencia con el equipo de support-tech-test@enviame.io
 
 ### Pregunta 3: Análisis de incidencia de bug web
 
@@ -81,6 +100,12 @@ El equipo de operaciones le reportó un problema al intentar ingresar a la plata
 Escribe a *support-tech-test@enviame.io* para derivar la incidencia.
 > Usa el asunto: [P3] Dev Issue [Action Required], incluyendo los antecedentes necesarios para que el equipo de desarrollo pueda resolver.
 
+Realizaria lo siguientes pasos:
+1.-Documentar los pasos seguidos para reproducir el error.
+2.-Capturar el mensaje de error mostrado en el navegador e incluir video con la descripcion detallada
+3.-Incluir logs de la consola del navegador.
+4.-Enviar reporte detallado al Dev Team y verificar si han tenido un error similiar.
+5.- Si aun asi no queda hacer incidencia con support-tech-test@enviame.io
 
 ### Pregunta 4: reporte de bug de backend
 
@@ -125,6 +150,13 @@ Escribe a *support-tech-test@enviame.io* para solicitar mas antecedentes, resolv
 > Si resuelves la incidencia pon en el asunto: [P4] Customer Issue [solved], e indica tu respuesta al cliente.
 > Si requieres derivar la incidencia al equipo de desarrollo de Envíame pon en el asunto: [P4] Dev Issue [Action Required], e indica los antecedentes para que el área de desarrollo pueda resolver.
 
+*Realizaria los siguientes pasos:
+1.-Aplicar un request GET a https://platform.enviame.io/support-test/companies/345 para validar que la empresa existe.
+2.-Aplicar un request GET a https://platform.enviame.io/support-test/users/1566 para verificar si el usuario está activo.
+3.-Si los datos son correctos, revisar si hay restricciones en la API de creación de tickets o como esta configurado.
+4.-En caso de error, enviar reporte al Dev Team con lo detallado que se realizo.
+5.-Si aun asi no queda documentar y realizar incidencia con el equipo de support-tech-test@enviame.io
+
 
 ### Pregunta 5: Búsqueda de datos:
 
@@ -150,20 +182,51 @@ Utilizando sus conocimientos en SQL y explorando la base de datos diseñe las co
 #### Pregunta 5.1
 Obtenga un listado de envíos (tabla deliveries) ordenado por fecha de manera descendente y que contenga los siguientes datos: id, imported_id, tracking_numbe, company_id, delivery_status_id y created_at, donde la empresa sea ***EVIL_CORP***, el estado de los envíos sea ***ENTREGADO*** y la fecha de creación se encuentre entre las fechas indicadas en el enunciado.
 
+SELECT id, imported_id, tracking_number, company_id, delivery_status_id, created_at
+FROM deliveries
+WHERE company_id = (SELECT id FROM companies WHERE code = 'EVIL_CORP')
+AND delivery_status_id = (SELECT id FROM delivery_statuses WHERE name = 'ENTREGADO')
+AND created_at BETWEEN '2020-09-01' AND '2020-11-01'
+ORDER BY created_at DESC
+
 #### Pregunta 5.2
 Mejore la consulta anterior, incluyendo mas tablas, para en lugar de entregar el dato company_id entregue el dato name1 (companies) y en lugar del dato delivery_status_id entregue el dato name (delivery_statuses).
+
+SELECT d.id, d.imported_id, d.tracking_number, c.name1 AS company_name, ds.name AS delivery_status, d.created_at
+FROM deliveries d
+JOIN companies c ON d.company_id = c.id
+JOIN delivery_statuses ds ON d.delivery_status_id = ds.id
+WHERE c.code = 'EVIL_CORP'
+AND ds.name = 'ENTREGADO'
+AND d.created_at BETWEEN '2020-09-01' AND '2020-11-01'
+ORDER BY d.created_at DESC;
 
 #### Pregunta 5.3
 Extienda la consulta anterior, incluyendo mas tablas, para agregar los siguientes datos código de bodega (warehouses), dirección de la bodega (address) y comuna de la bodega (places).
 
 Escribe a *support-tech-test@enviame.io* para enviar las consultas diseñadas para cada ítem usando el asunto [P5] SQL, e indicando el número de ítem antes de tu script SQL (Ej: Item 5.1: SELECT ... FROM ... WHERE ...;)
 
+SELECT d.id, d.imported_id, d.tracking_number, c.name1 AS company_name, ds.name AS delivery_status, w.code AS warehouse_code, w.address, p.name AS place_name, d.created_at
+FROM deliveries d
+JOIN companies c ON d.company_id = c.id
+JOIN delivery_statuses ds ON d.delivery_status_id = ds.id
+JOIN warehouses w ON d.warehouse_id = w.id
+JOIN places p ON w.place_id = p.id
+WHERE c.code = 'EVIL_CORP'
+AND ds.name = 'ENTREGADO'
+AND d.created_at BETWEEN '2020-09-01' AND '2020-11-01'
+ORDER BY d.created_at DESC;
 
 ### Pregunta 6: Reporte
 
 Para los 5 casos anteriormente descritos envíe un reporte sencillo, que conste de una tabla donde se agrupen las incidencias por tipo y estado, y donde se indique:
 * Tipo de incidencia: soporte o requerimiento
 * Estado: solucionado o pendiente
+
+![image](https://github.com/user-attachments/assets/16c29fdf-530d-4d3c-83f7-1dbb0571144d)
+![image](https://github.com/user-attachments/assets/60925b2b-b5af-419c-90b5-17a97dc2c7fa)
+
+
 
 El reporte debe ser enviado a: *support-tech-test@enviame.io*, usando el asunto [P6] Reporte
 
